@@ -1,0 +1,1 @@
+# Good-News-Devotional---Gospel-of-Mark
