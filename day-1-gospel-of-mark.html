@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good News Devotional — Day 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --scale: 1;
+    --paper: #EEEAE0;
+    --paper-2: #E4DECE;
+    --ink: #2B2B24;
+    --ink-soft: #55524A;
+    --ember: #A8552A;
+    --ember-soft: #C97C4F;
+    --verdigris: #3F5C52;
+    --verdigris-soft: #6E8A80;
+    --gold: #C79A45;
+    --rule: #D3CBB8;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    font-size: calc(17px * var(--scale));
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .eyebrow{
+    font-family: 'Fraunces', serif;
+  }
+
+  a { color: var(--verdigris); }
+
+  /* ---------- Candle progress signature ---------- */
+  #candle-track{
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 14px;
+    background: linear-gradient(to bottom, var(--paper-2), var(--rule));
+    z-index: 5;
+  }
+  #candle-flame{
+    position: fixed;
+    left: 0; width: 14px;
+    background: linear-gradient(to bottom, var(--gold), var(--ember));
+    box-shadow: 0 0 12px 2px rgba(199,154,69,0.55);
+    z-index: 6;
+    border-radius: 0 0 3px 3px;
+    transition: height 0.15s linear, top 0.15s linear;
+  }
+  #candle-tip{
+    position: fixed;
+    left: -3px; width: 20px; height: 20px;
+    z-index: 7;
+    transform: translateY(-95%);
+  }
+  #candle-tip svg{ width: 100%; height: 100%; animation: flicker 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
+  @keyframes flicker{
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.05, 0.97) rotate(-2deg); }
+    50% { transform: scale(0.96, 1.05) rotate(1deg); }
+    75% { transform: scale(1.03, 0.98) rotate(2deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #candle-tip svg{ animation: none; }
+    html{ scroll-behavior: auto; }
+  }
+
+  /* ---------- Toolbar ---------- */
+  #toolbar{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(238,234,224,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 18px 10px 30px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  #toolbar .day-tag{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: calc(15px * var(--scale));
+    color: var(--ember);
+    letter-spacing: 0.03em;
+    margin-right: auto;
+  }
+  .tool-group{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--paper-2);
+    border-radius: 999px;
+    padding: 4px 6px;
+  }
+  .tool-btn{
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 15px;
+    line-height: 1;
+  }
+  .tool-btn:hover{ background: var(--rule); }
+  .tool-btn:focus-visible, a:focus-visible, button:focus-visible{
+    outline: 3px solid var(--verdigris);
+    outline-offset: 2px;
+  }
+  #read-toggle{
+    background: var(--verdigris);
+    color: var(--paper);
+  }
+  #read-toggle:hover{ background: var(--verdigris-soft); }
+  #read-toggle.active{ background: var(--ember); }
+
+  /* ---------- Layout ---------- */
+  main{
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 24px 100px 44px;
+  }
+
+  header.masthead{
+    text-align: center;
+    margin-bottom: 46px;
+  }
+  header.masthead .kicker{
+    font-size: calc(13px * var(--scale));
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--verdigris);
+    font-weight: 700;
+  }
+  header.masthead h1{
+    font-size: calc(40px * var(--scale));
+    font-weight: 700;
+    margin: 10px 0 6px;
+    color: var(--ink);
+  }
+  header.masthead .sub{
+    font-size: calc(16px * var(--scale));
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  section.lesson{
+    margin-bottom: 44px;
+    padding-top: 8px;
+    scroll-margin-top: 70px;
+  }
+  section.lesson.reading-now{
+    background: rgba(199,154,69,0.10);
+    border-radius: 10px;
+    box-shadow: inset 3px 0 0 var(--ember);
+  }
+  .eyebrow{
+    font-size: calc(29px * var(--scale));
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ember);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 10px;
+    line-height: 1.15;
+    text-align: center;
+  }
+  h2.section-title{
+    font-size: calc(17px * var(--scale));
+    font-weight: 500;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin: 30px 0 6px;
+    text-align: center;
+  }
+  .instruction{
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: calc(15px * var(--scale));
+    margin: 0 0 4px;
+    text-align: center;
+  }
+  .passage-title{
+    font-weight: 700;
+    font-size: calc(16px * var(--scale));
+    margin-bottom: 8px;
+  }
+  .verse-num{
+    font-weight: 700;
+    color: var(--ember);
+  }
+  p{ margin: 0 0 14px; }
+  .prayer p, .creed p, .catechism p, .song p{ font-style: italic; }
+  .creed p, .catechism p{ font-style: normal; }
+  blockquote{
+    margin: 0 0 14px;
+    padding-left: 16px;
+    border-left: 3px solid var(--rule);
+    font-style: italic;
+  }
+
+  .section-controls{
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .mini-btn{
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--verdigris);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    font-weight: 700;
+    font-size: calc(13px * var(--scale));
+    border-radius: 8px;
+    padding: 7px 12px;
+    cursor: pointer;
+  }
+  .mini-btn:hover{ background: var(--paper-2); }
+
+  .song-block{
+    background: var(--paper-2);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .song-link{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    background: var(--verdigris);
+    color: var(--paper);
+    text-decoration: none;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: calc(14px * var(--scale));
+  }
+  .song-link:hover{ background: var(--verdigris-soft); }
+
+  .song-player{
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  hr.divider{
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 44px 0;
+  }
+
+  footer{
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: calc(13px * var(--scale));
+    padding: 20px;
+  }
+
+  .visually-hidden{
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+  }
+</style>
+</head>
+<body>
+
+<div id="candle-track"></div>
+<div id="candle-flame"></div>
+<div id="candle-tip">
+  <svg viewBox="0 0 20 20"><path d="M10 1c2 3 3.5 5 3.5 7.5A3.5 3.5 0 1 1 6.5 8.5C6.5 6 8 3 10 1z" fill="#E8B84B"/></svg>
+</div>
+
+<div id="toolbar">
+  <span class="day-tag">Day 1 of 30 · The Preaching of John the Baptist</span>
+
+  <div class="tool-group" role="group" aria-label="Font size">
+    <button class="tool-btn" id="font-dec" aria-label="Decrease text size">A−</button>
+    <button class="tool-btn" id="font-reset" aria-label="Reset text size">A</button>
+    <button class="tool-btn" id="font-inc" aria-label="Increase text size">A+</button>
+  </div>
+
+  <div class="tool-group" role="group" aria-label="Read aloud">
+    <button class="tool-btn" id="read-toggle">🔊 Read aloud</button>
+  </div>
+</div>
+
+<main>
+
+  <header class="masthead">
+    <span class="kicker">Good News Devotional</span>
+    <h1>Day 1</h1>
+    <p class="sub">A 20–30 minute study through the Gospel of Mark</p>
+  </header>
+
+  <section class="lesson" id="s1" data-speak="true" data-harry="audio/day1/s1-harry.mp3" data-dom="audio/day1/s1-dom.mp3">
+    <span class="eyebrow">Call to Worship</span>
+    <p class="instruction">Hear God call you to worship through this reading of His word.</p>
+    <h2 class="section-title">The Enormous Crowd</h2>
+    <p class="passage-title">Revelation 7:9–10 | GNT</p>
+    <p><span class="verse-num">9</span> After this I looked, and there was an enormous crowd — no one could count all the people! They were from every race, tribe, nation, and language, and they stood in front of the throne and of the Lamb, dressed in white robes and holding palm branches in their hands.</p>
+    <p><span class="verse-num">10</span> They called out in a loud voice: "Salvation comes from our God, who sits on the throne, and from the Lamb!"</p>
+  </section>
+
+  <section class="lesson" id="s2" data-speak="true" data-harry="audio/day1/s2-harry.mp3" data-dom="audio/day1/s2-dom.mp3">
+    <span class="eyebrow">Prayer of Adoration</span>
+    <p class="instruction">In your own words, tell the Lord how much you adore Him, or pray this prayer of adoration.</p>
+    <h2 class="section-title">Adoration of God's Holiness</h2>
+    <div class="prayer">
+      <p>Holy God, I come before You in awe and reverence of Your holiness. You are the majestic God, the One who is pure and untainted by sin. You are the only One who is worthy of all adoration and praise. Let my heart be consumed with the wonder of Your holiness, and may my life be a testimony to Your glory. Amen.</p>
+    </div>
+  </section>
+
+  <section class="lesson" id="s3" data-speak="true" data-harry="audio/day1/s3-harry.mp3" data-dom="audio/day1/s3-dom.mp3">
+    <span class="eyebrow">Confession of Faith</span>
+    <p class="instruction">Confess what you believe about the Christian faith by reciting this creed.</p>
+    <h2 class="section-title">The Apostles' Creed <span style="font-weight:400; font-size: 0.7em; color: var(--ink-soft);">(2nd century)</span></h2>
+    <div class="creed">
+      <p>I believe in God the Father, Almighty, Maker of heaven and earth.</p>
+      <p>And in Jesus Christ, His only begotten Son, our Lord; who was conceived by the Holy Spirit, born of the virgin Mary, suffered under Pontius Pilate, was crucified, dead, and buried. He descended into hell: the third day He rose again from the dead. He ascended into heaven and sits at the right hand of God the Father Almighty. From there He shall come to judge the living and the dead.</p>
+      <p>I believe in the Holy Spirit. I believe a holy catholic* church, the communion of saints; the forgiveness of sins; the resurrection of the body; and the life everlasting. Amen.</p>
+      <p style="font-size: 0.85em; color: var(--ink-soft);">*That is, the true Christian church of all times and all places.</p>
+    </div>
+  </section>
+
+  <section class="lesson" id="s4" data-speak="true" data-harry="audio/day1/s4-harry.mp3" data-dom="audio/day1/s4-dom.mp3">
+    <span class="eyebrow">Reading of the Law</span>
+    <p class="instruction">Hear God's Law as His will for your life through this reading.</p>
+    <h2 class="section-title">Remain in My Love</h2>
+    <p class="passage-title">John 15:8–12 | GNT</p>
+    <p><span class="verse-num">8</span> My Father's glory is shown by your bearing much fruit; and in this way you become My disciples.</p>
+    <p><span class="verse-num">9</span> I love you just as the Father loves Me; remain in My love.</p>
+    <p><span class="verse-num">10</span> If you obey My commands, you will remain in My love, just as I have obeyed My Father's commands and remain in His love.</p>
+    <p><span class="verse-num">11</span> "I have told you this so that My joy may be in you and that your joy may be complete.</p>
+    <p><span class="verse-num">12</span> My commandment is this: love one another, just as I love you."</p>
+  </section>
+
+  <section class="lesson" id="s5" data-speak="true" data-harry="audio/day1/s5-harry.mp3" data-dom="audio/day1/s5-dom.mp3">
+    <span class="eyebrow">Confession of Sin</span>
+    <p class="instruction">In your own words confess your sins to God, or pray this prayer of confession.</p>
+    <h2 class="section-title">A Prayer of Confession</h2>
+    <div class="prayer">
+      <p>Almighty God, my heavenly Father: I have sinned against You, through my own fault, in thought, word, and deed. For the sake of Your Son our Lord Jesus Christ, forgive me all my offenses; and grant that I may serve You in newness of life, to the glory of Your Name. I ask this through Christ my Lord. Amen.</p>
+    </div>
+  </section>
+
+  <section class="lesson" id="s6" data-speak="true" data-harry="audio/day1/s6-harry.mp3" data-dom="audio/day1/s6-dom.mp3">
+    <span class="eyebrow">Assurance of Pardon</span>
+    <p class="instruction">Read words of comfort from God's word and receive the proclamation of His grace and the assurance of the forgiveness of your sins.</p>
+    <h2 class="section-title">From Death to Life</h2>
+    <p class="passage-title">Ephesians 2:1–10 | GNT</p>
+    <p><span class="verse-num">1</span> In the past you were spiritually dead because of your disobedience and sins.</p>
+    <p><span class="verse-num">2</span> At that time you followed the world's evil way; you obeyed the ruler of the spiritual powers in space, the spirit who now controls the people who disobey God.</p>
+    <p><span class="verse-num">3</span> Actually all of us were like them and lived according to our natural desires, doing whatever suited the wishes of our own bodies and minds. In our natural condition we, like everyone else, were destined to suffer God's anger.</p>
+    <p><span class="verse-num">4</span> But God's mercy is so abundant, and His love for us is so great,</p>
+    <p><span class="verse-num">5</span> that while we were spiritually dead in our disobedience, He brought us to life with Christ. It is by God's grace that you have been saved.</p>
+    <p><span class="verse-num">6</span> In our union with Christ Jesus He raised us up with Him to rule with Him in the heavenly world.</p>
+    <p><span class="verse-num">7</span> He did this to demonstrate for all time to come the extraordinary greatness of His grace in the love He showed us in Christ Jesus.</p>
+    <p><span class="verse-num">8-9</span> For it is by God's grace that you have been saved through faith. It is not the result of your own efforts, but God's gift, so that no one can boast about it.</p>
+    <p><span class="verse-num">10</span> God has made us what we are, and in our union with Christ Jesus He has created us for a life of good deeds, which He has already prepared for us to do.</p>
+  </section>
+
+  <section class="lesson" id="s7" data-speak="false" data-song="true" data-harry="audio/day1/s7-harry.mp3" data-dom="audio/day1/s7-dom.mp3" data-song-audio="audio/day1/song-precious-silver.mp3">
+    <span class="eyebrow">Song of Praise</span>
+    <p class="instruction">Sing a song of praise to God. Tap below to play the recording and follow along with the words.</p>
+    <h2 class="section-title">Lord, You Are More Precious Than Silver</h2>
+    <div class="song-block">
+      <div class="song">
+        <p>Lord, You are, more precious than silver;<br>Lord, You are, more costly than gold;<br>Lord, You are, more beautiful than diamonds;<br>And nothing I desire compares with You.</p>
+        <p>Lord, You are, more precious than silver;<br>Lord, You are, more costly than gold;<br>Lord, You are, more beautiful than diamonds;<br>And nothing I desire compares with You.</p>
+      </div>
+      <audio class="song-player" controls preload="none" src="audio/day1/song-precious-silver.mp3">
+        Your browser doesn't support audio playback.
+      </audio>
+    </div>
+  </section>
+
+  <section class="lesson" id="s8" data-speak="true" data-harry="audio/day1/s8-harry.mp3" data-dom="audio/day1/s8-dom.mp3">
+    <span class="eyebrow">Prayer for Illumination</span>
+    <p class="instruction">Pray that God the Holy Spirit sanctify your heart and mind as you read His Word, or pray this prayer of illumination.</p>
+    <h2 class="section-title">Open My Eyes</h2>
+    <div class="prayer">
+      <p>Almighty God, in You are hidden all the treasures of wisdom and knowledge. Open my eyes that I may see the wonders of Your Word. Give me grace that I may clearly understand and freely choose the way of Your wisdom. I ask this through Christ my Lord. Amen.</p>
+    </div>
+  </section>
+
+  <section class="lesson" id="s9" data-speak="true" data-harry="audio/day1/s9-harry.mp3" data-dom="audio/day1/s9-dom.mp3">
+    <span class="eyebrow">Scripture Reading</span>
+    <p class="instruction">Hear from God's Holy Word.</p>
+    <h2 class="section-title">The Preaching of John the Baptist</h2>
+    <p class="passage-title">Mark 1:1–20 | GNT</p>
+    <p><span class="verse-num">1</span> This is the Good News about Jesus Christ, the Son of God.</p>
+    <p><span class="verse-num">2</span> It began as the prophet Isaiah had written:</p>
+    <blockquote>"God said, 'I will send My messenger ahead of You to open the way for You.'</blockquote>
+    <p><span class="verse-num">3</span> Someone is shouting in the desert, 'Get the road ready for the Lord; make a straight path for Him to travel!'"</p>
+    <p><span class="verse-num">4</span> So John appeared in the desert, baptising, and preaching. "Turn away from your sins and be baptised," he told the people, "and God will forgive your sins."</p>
+    <p><span class="verse-num">5</span> Many people from the province of Judea and the city of Jerusalem went out to hear John. They confessed their sins, and he baptised them in the Jordan River.</p>
+    <p><span class="verse-num">6</span> John wore clothes made of camel's hair, with a leather belt around his waist, and his food was locusts and wild honey.</p>
+    <p><span class="verse-num">7</span> He announced to the people, "The Man who will come after me is much greater than I am. I am not good enough even to bend down and untie His sandals.</p>
+    <p><span class="verse-num">8</span> I baptise you with water, but He will baptise you with the Holy Spirit."</p>
+
+    <h3 style="font-family:'Fraunces',serif; font-size: calc(18px * var(--scale)); margin-top: 26px;">The Baptism and Temptation of Jesus</h3>
+    <p><span class="verse-num">9</span> Not long afterward Jesus came from Nazareth in the province of Galilee and was baptised by John in the Jordan.</p>
+    <p><span class="verse-num">10</span> As soon as Jesus came up out of the water, He saw heaven opening and the Spirit coming down on Him like a dove.</p>
+    <p><span class="verse-num">11</span> And a voice came from heaven,</p>
+    <blockquote>"You are My Own dear Son. I am pleased with You."</blockquote>
+    <p><span class="verse-num">12</span> At once the Spirit made Him go into the desert,</p>
+    <p><span class="verse-num">13</span> where He stayed forty days, being tempted by Satan. Wild animals were there also, but angels came and helped Him.</p>
+
+    <h3 style="font-family:'Fraunces',serif; font-size: calc(18px * var(--scale)); margin-top: 26px;">Jesus Calls Four Fishermen</h3>
+    <p><span class="verse-num">14</span> After John had been put in prison, Jesus went to Galilee and preached the Good News from God.</p>
+    <p><span class="verse-num">15</span> "The right time has come," He said, "and the Kingdom of God is near! Turn away from your sins and believe the Good News!"</p>
+    <p><span class="verse-num">16</span> As Jesus walked along the shore of Lake Galilee, He saw two fishermen, Simon, and his brother Andrew, catching fish with a net.</p>
+    <p><span class="verse-num">17</span> Jesus said to them, "Come with Me, and I will teach you to catch people."</p>
+    <p><span class="verse-num">18</span> At once they left their nets and went with Him.</p>
+    <p><span class="verse-num">19</span> He went a little farther on and saw two other brothers, James and John, the sons of Zebedee. They were in their boat getting their nets ready.</p>
+    <p><span class="verse-num">20</span> As soon as Jesus saw them, He called them; they left their father Zebedee in the boat with the hired men and went with Jesus.</p>
+  </section>
+
+  <section class="lesson" id="s10" data-speak="false" data-song="true" data-harry="audio/day1/s10-harry.mp3" data-dom="audio/day1/s10-dom.mp3" data-song-audio="audio/day1/song-doxology.mp3">
+    <span class="eyebrow">Doxology</span>
+    <p class="instruction">Sing this praise to God as a response to the reading of His Word.</p>
+    <h2 class="section-title">Praise God, From Whom All Blessings Flow</h2>
+    <div class="song-block">
+      <div class="song">
+        <p>Praise God, from whom all blessings flow;<br>Praise Him, all creatures here below;<br>Praise Him above, ye heavenly host;<br>Praise Father, Son, and Holy Ghost!</p>
+      </div>
+      <audio class="song-player" controls preload="none" src="audio/day1/song-doxology.mp3">
+        Your browser doesn't support audio playback.
+      </audio>
+    </div>
+  </section>
+
+  <section class="lesson" id="s11" data-speak="true" data-harry="audio/day1/s11-harry.mp3" data-dom="audio/day1/s11-dom.mp3">
+    <span class="eyebrow">Prayer of Petition</span>
+    <p class="instruction">Ask God for help as you pray for those in your family, the church, and this world, or pray this prayer of petition.</p>
+    <h2 class="section-title">For the Family</h2>
+    <div class="prayer">
+      <p>Heavenly Father, I pray for my family. I pray for all their physical and spiritual needs, for their protection and safety, for their relationships with one another and with You, for their growth in faith and obedience, and for their salvation.</p>
+      <p>Please open their eyes of understanding so they may know the depths of Your love that You have poured out to them through Your Son.</p>
+      <p>I pray that each member of the family would grow in their relationship with You, reading and obeying Your word, and sharing their faith with others.</p>
+      <p>I pray that each family member would have healthy and loving relationships with one another, and that any conflicts or divisions would be resolved with grace and forgiveness.</p>
+      <p>Please give them comfort and peace as they grow through the sufferings of this life, and may they continue to grow stronger in faith in the knowledge that everything required for their salvation has been accomplished for them through Your Son.</p>
+      <p>May they be strengthened by the Holy Spirit and be conformed to the image of Your Son as they grow in sanctification. Please help them to mortify the flesh, flee from temptation and keep their eyes fixed on Jesus Christ.</p>
+      <p>I ask all this for Your glory and for the sake of Jesus Christ my Lord. Amen.</p>
+    </div>
+  </section>
+
+  <section class="lesson" id="s12" data-speak="true" data-harry="audio/day1/s12-harry.mp3" data-dom="audio/day1/s12-dom.mp3">
+    <span class="eyebrow">Catechism Lesson</span>
+    <p class="instruction">Receive instruction from the doctrines of the Christian faith.</p>
+    <h2 class="section-title">Heidelberg Catechism <span style="font-weight:400; font-size: 0.7em; color: var(--ink-soft);">(1563)</span></h2>
+    <div class="catechism">
+      <p><strong>Question 1.</strong> What is your only comfort in life and in death?</p>
+      <p><strong>Answer.</strong> That I am not my own, but belong, body and soul, in life and in death to my faithful Saviour Jesus Christ. He has fully paid for all my sins with His precious blood and has set me free from the tyranny of the devil. He also watches over me in such a way that not a hair can fall from my head without the will of my Father in heaven: in fact, all things must work together for my salvation. Because I belong to Him, Christ, by His Holy Spirit, assures me of eternal life and makes me wholeheartedly willing and ready from now on to live for Him.</p>
+      <p><strong>Question 2.</strong> What must you know to live and die in the joy of this comfort?</p>
+      <p><strong>Answer.</strong> Three things: first, how great my sin and misery are. Second, how I am set free from all my sins and misery. Third, how I am to thank God for such deliverance.</p>
+    </div>
+  </section>
+
+  <section class="lesson" id="s13" data-speak="true" data-harry="audio/day1/s13-harry.mp3" data-dom="audio/day1/s13-dom.mp3">
+    <span class="eyebrow">The Lord's Prayer</span>
+    <p class="instruction">Pray this prayer Jesus taught His disciples to pray.</p>
+    <h2 class="section-title">Our Father in Heaven</h2>
+    <div class="prayer">
+      <p>Our Father in heaven, hallowed be Your name, Your kingdom come, Your will be done, on earth as in heaven. Give us today our daily bread. Forgive us our sins as we forgive those who sin against us. Lead us not into temptation but deliver us from the evil one. For the kingdom, the power, and the glory are Yours now and forever. Amen.</p>
+    </div>
+  </section>
+
+  <section class="lesson" id="s14" data-speak="false" data-song="true" data-harry="audio/day1/s14-harry.mp3" data-dom="audio/day1/s14-dom.mp3" data-song-audio="audio/day1/song-because-he-lives.mp3">
+    <span class="eyebrow">Song of Praise</span>
+    <p class="instruction">Sing a song of praise to God. Tap below to play the recording and follow along with the words.</p>
+    <h2 class="section-title">Because He Lives</h2>
+    <div class="song-block">
+      <div class="song">
+        <p>God sent His son, they called Him Jesus;<br>He came to love, heal and forgive;<br>He bled and died to buy my pardon,<br>an empty grave is there to prove my Saviour lives.</p>
+        <p>And because He lives, I can face tomorrow;<br>Because He lives, all fear is gone;<br>Because I know He holds the future,<br>and life is worth the living just because He lives.</p>
+        <p>And then one day, I'll cross the river,<br>and I'll fight life's final war with pain;<br>and then as death gives way to victory,<br>I'll see the lights of glory, and I'll know He reigns.</p>
+        <p>Because He lives, I can face tomorrow;<br>Because He lives, all fear is gone;<br>Because I know He holds the future,<br>and life is worth the living, just because He lives.</p>
+      </div>
+      <audio class="song-player" controls preload="none" src="audio/day1/song-because-he-lives.mp3">
+        Your browser doesn't support audio playback.
+      </audio>
+    </div>
+  </section>
+
+  <footer>
+    Good News Devotional · Day 1 of 30 · Gospel of Mark
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  // ---------- Font size control ----------
+  var root = document.documentElement;
+  var steps = [0.875, 1, 1.125, 1.25, 1.375, 1.5];
+  var stored = parseFloat(localStorage.getItem('gnt-font-scale'));
+  var idx = steps.indexOf(stored);
+  if (idx === -1) idx = 1; // default 1.0
+
+  function applyScale(){
+    document.body.style.setProperty('--scale', steps[idx]);
+    localStorage.setItem('gnt-font-scale', steps[idx]);
+  }
+  applyScale();
+
+  document.getElementById('font-inc').addEventListener('click', function(){
+    idx = Math.min(idx + 1, steps.length - 1);
+    applyScale();
+  });
+  document.getElementById('font-dec').addEventListener('click', function(){
+    idx = Math.max(idx - 1, 0);
+    applyScale();
+  });
+  document.getElementById('font-reset').addEventListener('click', function(){
+    idx = 1;
+    applyScale();
+  });
+
+  // ---------- Candle progress ----------
+  var flame = document.getElementById('candle-flame');
+  var tip = document.getElementById('candle-tip');
+  function updateCandle(){
+    var scrollTop = window.scrollY;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = docHeight > 0 ? scrollTop / docHeight : 0;
+    pct = Math.max(0, Math.min(1, pct));
+    var vh = window.innerHeight;
+    var burned = vh * pct;
+    flame.style.top = burned + 'px';
+    flame.style.height = (vh - burned) + 'px';
+    tip.style.top = burned + 'px';
+  }
+  updateCandle();
+  window.addEventListener('scroll', updateCandle);
+  window.addEventListener('resize', updateCandle);
+
+  // ---------- Read aloud (Alex + Harry audio files, with TTS fallback) ----------
+  var synth = window.speechSynthesis;
+  var readBtn = document.getElementById('read-toggle');
+  var sections = Array.prototype.slice.call(document.querySelectorAll('section.lesson'));
+  var speaking = false;
+  var currentAudio = null;
+
+  function clearHighlight(){
+    sections.forEach(function(s){ s.classList.remove('reading-now'); });
+  }
+
+  function stopEverything(){
+    speaking = false;
+    if (currentAudio){ currentAudio.pause(); currentAudio = null; }
+    synth.cancel();
+    readBtn.textContent = '🔊 Read aloud';
+    readBtn.classList.remove('active');
+    clearHighlight();
+  }
+
+  // Tries to play a real audio file. Falls back to browser speech synthesis
+  // (reading the given text) if the file is missing or fails to load —
+  // so the page still works before all the recordings are in place.
+  function playClip(src, fallbackText, onDone){
+    if (!speaking) return;
+    if (!src){ onDone(); return; }
+
+    var audio = new Audio(src);
+    currentAudio = audio;
+    var settled = false;
+
+    function done(){
+      if (settled) return;
+      settled = true;
+      if (currentAudio === audio) currentAudio = null;
+      onDone();
+    }
+
+    audio.addEventListener('ended', done);
+    audio.addEventListener('error', function(){
+      if (settled) return;
+      settled = true;
+      if (!fallbackText){ onDone(); return; }
+      var utter = new SpeechSynthesisUtterance(fallbackText);
+      utter.rate = 0.95;
+      utter.onend = onDone;
+      utter.onerror = onDone;
+      synth.speak(utter);
+    });
+
+    audio.play().catch(function(){
+      // Autoplay blocked or file missing — try fallback text
+      if (settled) return;
+      settled = true;
+      if (!fallbackText){ onDone(); return; }
+      var utter = new SpeechSynthesisUtterance(fallbackText);
+      utter.rate = 0.95;
+      utter.onend = onDone;
+      utter.onerror = onDone;
+      synth.speak(utter);
+    });
+  }
+
+  function speakSection(i){
+    if (!speaking) return;
+    if (i >= sections.length){ stopEverything(); return; }
+
+    var section = sections[i];
+    clearHighlight();
+    section.classList.add('reading-now');
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    var harrySrc = section.dataset.harry;
+    var domSrc = section.dataset.dom;
+    var harryText = (section.querySelector('.eyebrow') ? section.querySelector('.eyebrow').innerText + '. ' : '') +
+                   (section.querySelector('.instruction') ? section.querySelector('.instruction').innerText : '');
+    var isSong = section.dataset.song === 'true';
+    var domText = isSong
+      ? (section.querySelector('.section-title') ? section.querySelector('.section-title').innerText : '')
+      : section.innerText;
+
+    playClip(harrySrc, harryText, function(){
+      if (!speaking) return;
+      playClip(domSrc, domText, function(){
+        if (!speaking) return;
+        if (isSong){
+          // Pause here so the family can play their own recording manually,
+          // then move on after a short pause.
+          setTimeout(function(){ speakSection(i + 1); }, 3000);
+        } else {
+          speakSection(i + 1);
+        }
+      });
+    });
+  }
+
+  readBtn.addEventListener('click', function(){
+    if (!speaking){
+      speaking = true;
+      readBtn.textContent = '⏸ Stop';
+      readBtn.classList.add('active');
+      speakSection(0);
+    } else {
+      stopEverything();
+    }
+  });
+
+  if (!('speechSynthesis' in window)){
+    readBtn.disabled = true;
+    readBtn.title = 'Read aloud is not supported in this browser';
+  }
+})();
+</script>
+
+</body>
+</html>
