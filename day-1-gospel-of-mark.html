@@ -169,7 +169,16 @@
   section.lesson.reading-now{
     background: rgba(199,154,69,0.10);
     border-radius: 10px;
-    box-shadow: inset 3px 0 0 var(--ember);
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  section.lesson.reading-now p,
+  section.lesson.reading-now blockquote,
+  section.lesson.reading-now .song p{
+    text-decoration: underline;
+    text-decoration-color: var(--ember-soft);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
   }
   .eyebrow{
     font-size: calc(29px * var(--scale));
@@ -576,6 +585,8 @@
   // Tries to play a real audio file. Falls back to browser speech synthesis
   // (reading the given text) if the file is missing or fails to load —
   // so the page still works before all the recordings are in place.
+  // A safety-net timer guarantees we always move on, even if the fallback
+  // voice itself is blocked or silently fails (this happens on some phones).
   function playClip(src, fallbackText, onDone){
     if (!speaking) return;
     if (!src){ onDone(); return; }
@@ -591,29 +602,41 @@
       onDone();
     }
 
-    audio.addEventListener('ended', done);
-    audio.addEventListener('error', function(){
+    function tryFallback(){
       if (settled) return;
       settled = true;
       if (!fallbackText){ onDone(); return; }
-      var utter = new SpeechSynthesisUtterance(fallbackText);
-      utter.rate = 0.95;
-      utter.onend = onDone;
-      utter.onerror = onDone;
-      synth.speak(utter);
-    });
 
-    audio.play().catch(function(){
-      // Autoplay blocked or file missing — try fallback text
-      if (settled) return;
-      settled = true;
-      if (!fallbackText){ onDone(); return; }
-      var utter = new SpeechSynthesisUtterance(fallbackText);
-      utter.rate = 0.95;
-      utter.onend = onDone;
-      utter.onerror = onDone;
-      synth.speak(utter);
-    });
+      // Safety net: if the fallback voice doesn't fire onend/onerror
+      // within a few seconds, force things to continue anyway.
+      var forced = false;
+      var safetyTimer = setTimeout(function(){
+        forced = true;
+        onDone();
+      }, 6000);
+
+      function finishFallback(){
+        if (forced) return;
+        clearTimeout(safetyTimer);
+        onDone();
+      }
+
+      try {
+        var utter = new SpeechSynthesisUtterance(fallbackText);
+        utter.rate = 0.95;
+        utter.onend = finishFallback;
+        utter.onerror = finishFallback;
+        synth.speak(utter);
+      } catch (e){
+        clearTimeout(safetyTimer);
+        onDone();
+      }
+    }
+
+    audio.addEventListener('ended', done);
+    audio.addEventListener('error', tryFallback);
+
+    audio.play().catch(tryFallback);
   }
 
   function speakSection(i){
