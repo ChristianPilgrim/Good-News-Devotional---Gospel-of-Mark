@@ -568,6 +568,7 @@
   var sections = Array.prototype.slice.call(document.querySelectorAll('section.lesson'));
   var speaking = false;
   var currentAudio = null;
+  var currentSectionIndex = 0;
 
   function clearHighlight(){
     sections.forEach(function(s){ s.classList.remove('reading-now'); });
@@ -723,8 +724,9 @@
 
   function speakSection(i){
     if (!speaking) return;
-    if (i >= sections.length){ stopEverything(); return; }
+    if (i >= sections.length){ currentSectionIndex = 0; stopEverything(); return; }
 
+    currentSectionIndex = i;
     var section = sections[i];
     clearHighlight();
     section.classList.add('reading-now');
@@ -762,7 +764,7 @@
       speaking = true;
       readBtn.textContent = '⏸ Stop';
       readBtn.classList.add('active');
-      speakSection(0);
+      speakSection(currentSectionIndex);
     } else {
       stopEverything();
     }
