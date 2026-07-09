@@ -172,13 +172,13 @@
     padding-left: 14px;
     padding-right: 14px;
   }
-  section.lesson.reading-now p,
-  section.lesson.reading-now blockquote,
-  section.lesson.reading-now .song p{
+  .phrase-active{
     text-decoration: underline;
     text-decoration-color: var(--ember-soft);
     text-decoration-thickness: 2px;
     text-underline-offset: 4px;
+    background: rgba(199,154,69,0.18);
+    border-radius: 4px;
   }
   .eyebrow{
     font-size: calc(29px * var(--scale));
@@ -573,6 +573,84 @@
     sections.forEach(function(s){ s.classList.remove('reading-now'); });
   }
 
+  function clearPhraseHighlight(){
+    document.querySelectorAll('.phrase-active').forEach(function(el){
+      el.classList.remove('phrase-active');
+    });
+  }
+
+  // Elements read by Harry: just the eyebrow heading + instruction line.
+  function getHarryPhraseElements(section){
+    var els = [];
+    var eyebrow = section.querySelector('.eyebrow');
+    var instruction = section.querySelector('.instruction');
+    if (eyebrow) els.push(eyebrow);
+    if (instruction) els.push(instruction);
+    return els;
+  }
+
+  // Elements read by Dom: subtitle, citation, verses, prayers, creed, catechism —
+  // everything except the eyebrow/instruction (Harry's) and anything inside a
+  // song-block (those aren't read aloud, they're sung by the family instead).
+  function getDomPhraseElements(section){
+    var selector = 'h2.section-title, h3, p.passage-title, blockquote, p';
+    var all = Array.prototype.slice.call(section.querySelectorAll(selector));
+    return all.filter(function(el){
+      if (el.classList.contains('instruction')) return false;
+      if (el.closest('.song-block')) return false;
+      if (!el.innerText || !el.innerText.trim()) return false;
+      return true;
+    });
+  }
+
+  // Wires up an audio element so that, as it plays, the phrase element whose
+  // estimated time-slice matches the current playback position gets
+  // highlighted. Time-slices are estimated proportionally by text length
+  // against the clip's real duration — not perfectly precise, but close.
+  function attachPhraseHighlighting(audio, elements){
+    if (!elements || !elements.length) return function(){};
+
+    var boundaries = null; // [{el, start, end}]
+
+    function computeBoundaries(){
+      var duration = audio.duration;
+      if (!duration || !isFinite(duration)) return null;
+      var totalChars = elements.reduce(function(sum, el){
+        return sum + el.innerText.trim().length;
+      }, 0);
+      if (totalChars === 0) return null;
+      var t = 0;
+      return elements.map(function(el){
+        var chars = el.innerText.trim().length;
+        var dur = (chars / totalChars) * duration;
+        var row = { el: el, start: t, end: t + dur };
+        t += dur;
+        return row;
+      });
+    }
+
+    function onLoadedMeta(){
+      boundaries = computeBoundaries();
+    }
+    function onTimeUpdate(){
+      if (!boundaries) return;
+      var ct = audio.currentTime;
+      var match = boundaries.find(function(b){ return ct >= b.start && ct < b.end; });
+      if (!match && boundaries.length) match = boundaries[boundaries.length - 1];
+      clearPhraseHighlight();
+      if (match) match.el.classList.add('phrase-active');
+    }
+
+    audio.addEventListener('loadedmetadata', onLoadedMeta);
+    audio.addEventListener('timeupdate', onTimeUpdate);
+
+    return function cleanup(){
+      audio.removeEventListener('loadedmetadata', onLoadedMeta);
+      audio.removeEventListener('timeupdate', onTimeUpdate);
+      clearPhraseHighlight();
+    };
+  }
+
   function stopEverything(){
     speaking = false;
     if (currentAudio){ currentAudio.pause(); currentAudio = null; }
@@ -580,6 +658,7 @@
     readBtn.textContent = '🔊 Read aloud';
     readBtn.classList.remove('active');
     clearHighlight();
+    clearPhraseHighlight();
   }
 
   // Tries to play a real audio file. Falls back to browser speech synthesis
@@ -587,17 +666,19 @@
   // so the page still works before all the recordings are in place.
   // A safety-net timer guarantees we always move on, even if the fallback
   // voice itself is blocked or silently fails (this happens on some phones).
-  function playClip(src, fallbackText, onDone){
+  function playClip(src, fallbackText, phraseElements, onDone){
     if (!speaking) return;
     if (!src){ onDone(); return; }
 
     var audio = new Audio(src);
     currentAudio = audio;
     var settled = false;
+    var detachHighlight = attachPhraseHighlighting(audio, phraseElements);
 
     function done(){
       if (settled) return;
       settled = true;
+      detachHighlight();
       if (currentAudio === audio) currentAudio = null;
       onDone();
     }
@@ -605,6 +686,7 @@
     function tryFallback(){
       if (settled) return;
       settled = true;
+      detachHighlight();
       if (!fallbackText){ onDone(); return; }
 
       // Safety net: if the fallback voice doesn't fire onend/onerror
@@ -657,9 +739,12 @@
       ? (section.querySelector('.section-title') ? section.querySelector('.section-title').innerText : '')
       : section.innerText;
 
-    playClip(harrySrc, harryText, function(){
+    var harryPhraseEls = getHarryPhraseElements(section);
+    var domPhraseEls = getDomPhraseElements(section);
+
+    playClip(harrySrc, harryText, harryPhraseEls, function(){
       if (!speaking) return;
-      playClip(domSrc, domText, function(){
+      playClip(domSrc, domText, domPhraseEls, function(){
         if (!speaking) return;
         if (isSong){
           // Pause here so the family can play their own recording manually,
