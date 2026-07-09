@@ -618,17 +618,26 @@
     // bonus for punctuation that naturally causes a pause (commas, periods,
     // semicolons, colons, dashes, ! and ?). This tracks natural speech
     // rhythm noticeably better than raw character count alone.
-    function phraseWeight(text){
+    function phraseWeight(text, el){
       var trimmed = text.trim();
       var words = trimmed.split(/\s+/).filter(Boolean).length;
       var pauses = (trimmed.match(/[,;:—–.!?]/g) || []).length;
-      return words + (pauses * 0.6);
+      var weight = words + (pauses * 0.6);
+
+      // Scripture citations (e.g. "Revelation 7:9-10 | GNT") are short to
+      // read but much longer to say out loud — "Revelation 7, verses 9 to
+      // 10, Good News Translation" — so boost their weight to match.
+      if (el && el.classList && el.classList.contains('passage-title')){
+        weight = weight * 2.6;
+      }
+
+      return weight;
     }
 
     function computeBoundaries(){
       var duration = audio.duration;
       if (!duration || !isFinite(duration)) return null;
-      var weights = elements.map(function(el){ return phraseWeight(el.innerText); });
+      var weights = elements.map(function(el){ return phraseWeight(el.innerText, el); });
       var totalWeight = weights.reduce(function(a,b){ return a+b; }, 0);
       if (totalWeight === 0) return null;
       var t = 0;
