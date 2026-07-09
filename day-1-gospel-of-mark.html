@@ -266,6 +266,7 @@
   .song-player{
     width: 100%;
     margin-top: 10px;
+    margin-bottom: 20px;
   }
 
   hr.divider{
@@ -390,14 +391,14 @@
     <span class="eyebrow">Song of Praise</span>
     <p class="instruction">Sing a song of praise to God. Tap below to play the recording and follow along with the words.</p>
     <h2 class="section-title">Lord, You Are More Precious Than Silver</h2>
+    <audio class="song-player" controls preload="none" src="song-precious-silver.mp3">
+      Your browser doesn't support audio playback.
+    </audio>
     <div class="song-block">
       <div class="song">
         <p>Lord, You are, more precious than silver;<br>Lord, You are, more costly than gold;<br>Lord, You are, more beautiful than diamonds;<br>And nothing I desire compares with You.</p>
         <p>Lord, You are, more precious than silver;<br>Lord, You are, more costly than gold;<br>Lord, You are, more beautiful than diamonds;<br>And nothing I desire compares with You.</p>
       </div>
-      <audio class="song-player" controls preload="none" src="song-precious-silver.mp3">
-        Your browser doesn't support audio playback.
-      </audio>
     </div>
   </section>
 
@@ -447,13 +448,13 @@
     <span class="eyebrow">Doxology</span>
     <p class="instruction">Sing this praise to God as a response to the reading of His Word.</p>
     <h2 class="section-title">Praise God, From Whom All Blessings Flow</h2>
+    <audio class="song-player" controls preload="none" src="song-doxology.mp3">
+      Your browser doesn't support audio playback.
+    </audio>
     <div class="song-block">
       <div class="song">
         <p>Praise God, from whom all blessings flow;<br>Praise Him, all creatures here below;<br>Praise Him above, ye heavenly host;<br>Praise Father, Son, and Holy Ghost!</p>
       </div>
-      <audio class="song-player" controls preload="none" src="song-doxology.mp3">
-        Your browser doesn't support audio playback.
-      </audio>
     </div>
   </section>
 
@@ -497,6 +498,9 @@
     <span class="eyebrow">Song of Praise</span>
     <p class="instruction">Sing a song of praise to God. Tap below to play the recording and follow along with the words.</p>
     <h2 class="section-title">Because He Lives</h2>
+    <audio class="song-player" controls preload="none" src="song-because-he-lives.mp3">
+      Your browser doesn't support audio playback.
+    </audio>
     <div class="song-block">
       <div class="song">
         <p>God sent His son, they called Him Jesus;<br>He came to love, heal and forgive;<br>He bled and died to buy my pardon,<br>an empty grave is there to prove my Saviour lives.</p>
@@ -504,9 +508,6 @@
         <p>And then one day, I'll cross the river,<br>and I'll fight life's final war with pain;<br>and then as death gives way to victory,<br>I'll see the lights of glory, and I'll know He reigns.</p>
         <p>Because He lives, I can face tomorrow;<br>Because He lives, all fear is gone;<br>Because I know He holds the future,<br>and life is worth the living, just because He lives.</p>
       </div>
-      <audio class="song-player" controls preload="none" src="song-because-he-lives.mp3">
-        Your browser doesn't support audio playback.
-      </audio>
     </div>
   </section>
 
@@ -613,17 +614,26 @@
 
     var boundaries = null; // [{el, start, end}]
 
+    // Estimates each phrase's "speaking weight" as word count plus a small
+    // bonus for punctuation that naturally causes a pause (commas, periods,
+    // semicolons, colons, dashes, ! and ?). This tracks natural speech
+    // rhythm noticeably better than raw character count alone.
+    function phraseWeight(text){
+      var trimmed = text.trim();
+      var words = trimmed.split(/\s+/).filter(Boolean).length;
+      var pauses = (trimmed.match(/[,;:—–.!?]/g) || []).length;
+      return words + (pauses * 0.6);
+    }
+
     function computeBoundaries(){
       var duration = audio.duration;
       if (!duration || !isFinite(duration)) return null;
-      var totalChars = elements.reduce(function(sum, el){
-        return sum + el.innerText.trim().length;
-      }, 0);
-      if (totalChars === 0) return null;
+      var weights = elements.map(function(el){ return phraseWeight(el.innerText); });
+      var totalWeight = weights.reduce(function(a,b){ return a+b; }, 0);
+      if (totalWeight === 0) return null;
       var t = 0;
-      return elements.map(function(el){
-        var chars = el.innerText.trim().length;
-        var dur = (chars / totalChars) * duration;
+      return elements.map(function(el, idx){
+        var dur = (weights[idx] / totalWeight) * duration;
         var row = { el: el, start: t, end: t + dur };
         t += dur;
         return row;
