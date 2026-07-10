@@ -575,6 +575,17 @@
     sections.forEach(function(s){ s.classList.remove('reading-now'); });
   }
 
+  // Scrolls to a section while accounting for the sticky toolbar's actual
+  // current height — the toolbar can wrap to 2-3 lines depending on font
+  // size and screen width, so a fixed offset isn't reliable.
+  function scrollToSection(section){
+    var toolbar = document.getElementById('toolbar');
+    var toolbarHeight = toolbar ? toolbar.offsetHeight : 70;
+    var extraGap = 16;
+    var targetY = section.getBoundingClientRect().top + window.scrollY - (toolbarHeight + extraGap);
+    window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+  }
+
   function clearPhraseHighlight(){
     document.querySelectorAll('.phrase-active').forEach(function(el){
       el.classList.remove('phrase-active');
@@ -749,7 +760,7 @@
     var section = sections[i];
     clearHighlight();
     section.classList.add('reading-now');
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollToSection(section);
 
     var harrySrc = section.dataset.harry;
     var domSrc = section.dataset.dom;
